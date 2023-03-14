@@ -55,6 +55,30 @@ class Character {
         return GenderCharacter.unknown;
     }
   }
+
+  String convertStatusInReadableText() {
+    switch (status) {
+      case StatusCharacter.alive:
+        return 'En vie';
+      case StatusCharacter.dead:
+        return 'Mort';
+      default:
+        return 'Inconnu';
+    }
+  }
+
+  String convertGenderInReadableText() {
+    switch (gender) {
+      case GenderCharacter.female:
+        return 'Femme';
+      case GenderCharacter.male:
+        return 'Homme';
+      case GenderCharacter.genderless:
+        return 'Sans sexe';
+      default:
+        return 'Inconnu';
+    }
+  }
 }
 
 enum StatusCharacter { alive, dead, unknown }

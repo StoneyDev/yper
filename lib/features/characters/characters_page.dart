@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yper/features/characters/pages/character_informations_page.dart';
 import 'package:yper/features/characters/view_models/character_view_model.dart';
 
 class CharactersPage extends StatelessWidget {
@@ -29,7 +30,7 @@ class CharactersPage extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (context) => Container(),
+                    builder: (context) => CharacterInformationsPage(value.characters[index]),
                   ),
                 ),
                 child: Padding(
