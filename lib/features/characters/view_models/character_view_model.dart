@@ -28,8 +28,6 @@ class CharacterViewModel extends ChangeNotifier {
       // Start loading
       _isLoading = !_isLoading;
 
-      print(_currentPage);
-
       notifyListeners();
 
       // Fetch locations
