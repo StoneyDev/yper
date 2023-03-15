@@ -5,32 +5,25 @@ import 'package:yper/features/characters/view_models/character_view_model.dart';
 import 'package:yper/features/characters/widgets/search_characters.dart';
 
 void main() {
-  testWidgets('Render', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Material(
-          child: ChangeNotifierProvider<CharacterViewModel>(
-            create: (context) => CharacterViewModel(),
-            child: const SearchCharacters(),
-          ),
+  Widget createWidgetUnderTest() {
+    return MaterialApp(
+      home: Material(
+        child: ChangeNotifierProvider<CharacterViewModel>(
+          create: (context) => CharacterViewModel(),
+          child: const SearchCharacters(),
         ),
       ),
     );
+  }
+
+  testWidgets('Render', (tester) async {
+    await tester.pumpWidget(createWidgetUnderTest());
 
     expect(find.byType(TextField), findsOneWidget);
   });
 
   testWidgets('Typing text', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Material(
-          child: ChangeNotifierProvider<CharacterViewModel>(
-            create: (context) => CharacterViewModel(),
-            child: const SearchCharacters(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createWidgetUnderTest());
 
     await tester.enterText(find.byType(TextField), 'Rick');
 
@@ -40,31 +33,13 @@ void main() {
   });
 
   testWidgets('Clear button is displayed correctly with no data', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Material(
-          child: ChangeNotifierProvider<CharacterViewModel>(
-            create: (context) => CharacterViewModel(),
-            child: const SearchCharacters(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createWidgetUnderTest());
 
     expect(find.byType(IconButton), findsNothing);
   });
 
   testWidgets('Clear button is displayed correctly with data', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Material(
-          child: ChangeNotifierProvider<CharacterViewModel>(
-            create: (context) => CharacterViewModel(),
-            child: const SearchCharacters(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createWidgetUnderTest());
 
     await tester.enterText(find.byType(TextField), 'Rick');
 
