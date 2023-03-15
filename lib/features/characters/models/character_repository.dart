@@ -31,4 +31,18 @@ class CharacterRepository {
       throw Exception('Failed to fetch character: $id');
     }
   }
+
+  /// Get alive characters by name 
+  Future<List<Character>> getAliveCharacters(String value) async {
+    final Uri url = Uri.parse('${HttpClient.charactersEndpoint}/?name=$value&status=alive');
+    final res = await http.get(url);
+
+    if (res.statusCode == 200) {
+      final characters = List<Map<String, dynamic>>.from(jsonDecode(res.body)['results']);
+
+      return characters.map((e) => Character.fromJson(e)).toList();
+    } else {
+      return [];
+    }
+  }
 }

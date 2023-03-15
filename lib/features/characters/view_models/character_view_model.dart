@@ -3,17 +3,22 @@ import 'package:yper/features/characters/models/character.dart';
 import 'package:yper/features/characters/models/character_repository.dart';
 
 class CharacterViewModel extends ChangeNotifier {
+  final CharacterRepository characterRepository = CharacterRepository();
+  final TextEditingController searchController = TextEditingController();
+
   List<Character> _characters = [];
+  List<Character> _filterCharacters = [];
 
   bool _isLoading = false;
+  bool _isSearchingMode = false;
 
   // Getter
   List<Character> get characters => _characters;
+  List<Character> get filterCharacter => _filterCharacters;
   bool get isLoading => _isLoading;
+  bool get isSearchingMode => _isSearchingMode;
 
   Future<List<Character>> fetchCharacters() async {
-    final CharacterRepository characterRepository = CharacterRepository();
-
     try {
       // Start loading
       _isLoading = !_isLoading;
@@ -32,5 +37,31 @@ class CharacterViewModel extends ChangeNotifier {
     }
 
     return _characters;
+  }
+
+  Future<void> filterCharacters(String value) async {
+    // Start loading
+    _isLoading = true;
+
+    _isSearchingMode = true;
+
+    notifyListeners();
+
+    // Fetch data
+    final List<Character> res = await characterRepository.getAliveCharacters(value);
+
+    // Take the first 5 living characters
+    _filterCharacters = res.take(5).toList();
+
+    // Stop loading
+    _isLoading = false;
+
+    notifyListeners();
+  }
+
+  void searchClear() {
+    _isSearchingMode = false;
+
+    notifyListeners();
   }
 }
