@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:yper/features/characters/models/character_repository.dart';
 import 'package:yper/features/characters/view_models/character_view_model.dart';
 import 'package:yper/features/characters/widgets/search_characters.dart';
 
@@ -9,7 +10,7 @@ void main() {
     return MaterialApp(
       home: Material(
         child: ChangeNotifierProvider<CharacterViewModel>(
-          create: (context) => CharacterViewModel(),
+          create: (context) => CharacterViewModel(CharacterRepository()),
           child: const SearchCharacters(),
         ),
       ),

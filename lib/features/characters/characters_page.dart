@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yper/features/characters/models/character.dart';
+import 'package:yper/features/characters/models/character_repository.dart';
 import 'package:yper/features/characters/pages/character_informations_page.dart';
 import 'package:yper/features/characters/view_models/character_view_model.dart';
 import 'package:yper/features/characters/widgets/search_characters.dart';
@@ -29,7 +30,7 @@ class _CharactersPageState extends State<CharactersPage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<CharacterViewModel>(
-      create: (_) => CharacterViewModel()..fetchCharacters(),
+      create: (_) => CharacterViewModel(CharacterRepository())..fetchCharacters(),
       child: Consumer<CharacterViewModel>(
         builder: (context, value, child) {
           listController.addListener(() async {

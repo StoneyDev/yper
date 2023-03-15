@@ -4,7 +4,10 @@ import 'package:yper/features/characters/models/character.dart';
 import 'package:yper/features/characters/models/character_repository.dart';
 
 class CharacterViewModel extends ChangeNotifier {
-  final CharacterRepository characterRepository = CharacterRepository();
+  final CharacterRepository _characterRepository;
+
+  CharacterViewModel(this._characterRepository);
+
   final TextEditingController searchController = TextEditingController();
 
   List<Character> _characters = [];
@@ -31,7 +34,7 @@ class CharacterViewModel extends ChangeNotifier {
       notifyListeners();
 
       // Fetch locations
-      final ResponseCharacter res = await characterRepository.getAll(_currentPage);
+      final ResponseCharacter res = await _characterRepository.getAll(_currentPage);
 
       _totalPage = res.totalPage;
       _characters = [..._characters, ...res.characters];
@@ -57,7 +60,7 @@ class CharacterViewModel extends ChangeNotifier {
     notifyListeners();
 
     // Fetch data
-    final List<Character> res = await characterRepository.getAliveCharacters(value);
+    final List<Character> res = await _characterRepository.getAliveCharacters(value);
 
     // Take the first 5 living characters
     _filterCharacters = res.take(5).toList();
