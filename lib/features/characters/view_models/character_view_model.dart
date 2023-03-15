@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yper/data/models/response_character.dart';
 import 'package:yper/features/characters/models/character.dart';
 import 'package:yper/features/characters/models/character_repository.dart';
 
@@ -11,22 +12,32 @@ class CharacterViewModel extends ChangeNotifier {
 
   bool _isLoading = false;
   bool _isSearchingMode = false;
+  int _totalPage = 0;
+  int _currentPage = 0;
 
   // Getter
   List<Character> get characters => _characters;
   List<Character> get filterCharacter => _filterCharacters;
   bool get isLoading => _isLoading;
   bool get isSearchingMode => _isSearchingMode;
+  int get totalPage => _totalPage;
+  int get currentPage => _currentPage;
 
   Future<List<Character>> fetchCharacters() async {
     try {
       // Start loading
       _isLoading = !_isLoading;
 
+      print(_currentPage);
+
       notifyListeners();
 
       // Fetch locations
-      _characters = await characterRepository.getAll();
+      final ResponseCharacter res = await characterRepository.getAll(_currentPage);
+
+      _totalPage = res.totalPage;
+      _characters = [..._characters, ...res.characters];
+      _currentPage += 1;
 
       // Stop loading
       _isLoading = !_isLoading;
