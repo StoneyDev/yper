@@ -14,34 +14,12 @@ class CharactersPage extends StatefulWidget {
 }
 
 class _CharactersPageState extends State<CharactersPage> {
-  final ScrollController listController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    listController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<CharacterViewModel>(
       create: (_) => CharacterViewModel(CharacterRepository())..fetchCharacters(),
       child: Consumer<CharacterViewModel>(
         builder: (context, value, child) {
-          listController.addListener(() async {
-            if (value.currentPage <= value.totalPage) {
-              if (listController.position.pixels >= (listController.position.maxScrollExtent - 120) &&
-                  !value.isLoading) {
-                await value.fetchCharacters();
-              }
-            }
-          });
-
           return Column(
             children: [
               // Search field
@@ -53,69 +31,84 @@ class _CharactersPageState extends State<CharactersPage> {
               if (value.isSearchingMode && value.filterCharacter.isEmpty) const Text('Aucun résultat'),
 
               Expanded(
-                child: ListView.builder(
-                  controller: listController,
-                  padding: const EdgeInsets.all(10),
-                  itemCount: value.isSearchingMode ? value.filterCharacter.length : value.characters.length,
-                  itemBuilder: (context, index) {
-                    final Character character =
-                        value.isSearchingMode ? value.filterCharacter[index] : value.characters[index];
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification? notification) {
+                    final ScrollMetrics? position = notification?.metrics;
 
-                    return Card(
-                      clipBehavior: Clip.hardEdge,
-                      child: InkWell(
-                        splashColor: Theme.of(context).primaryColor.withAlpha(30),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (context) => CharacterInformationsPage(character),
+                    if (value.currentPage <= value.totalPage && !value.isSearchingMode) {
+                      if ((position?.pixels ?? 0) >= ((position?.maxScrollExtent ?? 0) - 120) && !value.isLoading) {
+                        // Fetch data
+                        value.fetchCharacters();
+
+                        return true;
+                      }
+                    }
+
+                    return false;
+                  },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(10),
+                    itemCount: value.isSearchingMode ? value.filterCharacter.length : value.characters.length,
+                    itemBuilder: (context, index) {
+                      final Character character =
+                          value.isSearchingMode ? value.filterCharacter[index] : value.characters[index];
+
+                      return Card(
+                        clipBehavior: Clip.hardEdge,
+                        child: InkWell(
+                          splashColor: Theme.of(context).primaryColor.withAlpha(30),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (context) => CharacterInformationsPage(character),
+                            ),
                           ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  Stack(
-                                    alignment: Alignment.bottomRight,
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundImage: NetworkImage(character.image),
-                                      ),
-                                      CircleAvatar(
-                                        backgroundColor: character.status == StatusCharacter.alive
-                                            ? Colors.green
-                                            : character.status == StatusCharacter.dead
-                                                ? Colors.red
-                                                : Colors.black,
-                                        maxRadius: 6,
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Stack(
+                                      alignment: Alignment.bottomRight,
                                       children: [
-                                        Text(
-                                          character.name,
-                                          style: Theme.of(context).textTheme.titleLarge,
+                                        CircleAvatar(
+                                          backgroundImage: NetworkImage(character.image),
                                         ),
-                                        Text(character.origin),
+                                        CircleAvatar(
+                                          backgroundColor: character.status == StatusCharacter.alive
+                                              ? Colors.green
+                                              : character.status == StatusCharacter.dead
+                                                  ? Colors.red
+                                                  : Colors.black,
+                                          maxRadius: 6,
+                                        )
                                       ],
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            character.name,
+                                            style: Theme.of(context).textTheme.titleLarge,
+                                          ),
+                                          Text(character.origin),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
 
